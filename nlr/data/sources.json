@@ -1,0 +1,34 @@
+[
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Books.csv"
+    },
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Books_5.json.gz"
+    },
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Clothing_Shoes_and_Jewelry.csv"
+    },
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Clothing_Shoes_and_Jewelry_5.json.gz"
+    },
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Electronics.csv"
+    },
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Electronics_5.json.gz"
+    },
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Movies_and_TV.csv"
+    },
+    {
+        "Bucket": "nlr-data",
+        "Key": "raw/Movies_and_TV_5.json.gz"
+    }
+]
