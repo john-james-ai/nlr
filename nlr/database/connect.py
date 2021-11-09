@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Tuesday, November 9th 2021, 2:43:46 am                                                                        #
-# Modified : Tuesday, November 9th 2021, 1:41:06 pm                                                                        #
+# Modified : Tuesday, November 9th 2021, 4:50:02 pm                                                                        #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -21,6 +21,7 @@
 import logging
 import mysql.connector as cnx
 from mysql.connector import errorcode
+import contextlib
 
 from nlr.utils.config import Config
 from nlr.utils.security import auth
@@ -31,20 +32,30 @@ logger = logging.getLogger(__name__)
 
 class MySQLServer:
 
+    @contextlib.contextmanager
     def __call__(self):
         config = Config()
         server = config.read_config('MYSQL', 'server')
         credentials = auth(section=server, resource='server')
-        return cnx.connect(**credentials)
+        conn = cnx.connect(**credentials)
+        try:
+            yield conn
+        finally:
+            conn.close()
 
 # ------------------------------------------------------------------------------------------------------------------------ #
 
 
 class MySQLDatabase:
 
+    @contextlib.contextmanager
     def __call__(self, database: str):
         credentials = auth(section=database, resource='database')
-        return cnx.connect(**credentials)
+        conn = cnx.connect(**credentials)
+        try:
+            yield conn
+        finally:
+            conn.close()
 
 # ------------------------------------------------------------------------------------------------------------------------ #
 

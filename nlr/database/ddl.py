@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Monday, November 8th 2021, 9:00:56 pm                                                                         #
-# Modified : Tuesday, November 9th 2021, 5:12:57 am                                                                        #
+# Modified : Tuesday, November 9th 2021, 4:34:49 pm                                                                        #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -22,7 +22,7 @@
 
 TABLES = {}
 TABLES['datasource'] = """
-CREATE TABLE amazon(
+CREATE TABLE IF NOT EXISTS datasources(
     id INT AUTO_INCREMENT PRIMARY KEY,
     category VARCHAR(50),
     type VARCHAR(20),
