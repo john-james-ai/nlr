@@ -3,7 +3,7 @@
 # ======================================================================================================================== #
 # Project  : Natural Language Recommendation                                                                               #
 # Version  : 0.1.0                                                                                                         #
-# File     : \__init__.py                                                                                                  #
+# File     : \ddl.py                                                                                                       #
 # Language : Python 3.7.11                                                                                                 #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Author   : John James                                                                                                    #
@@ -11,11 +11,27 @@
 # Email    : john.james.sf@gmail.com                                                                                       #
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
-# Created  : Sunday, November 7th 2021, 9:11:51 pm                                                                         #
-# Modified : Tuesday, November 9th 2021, 12:04:10 am                                                                       #
+# Created  : Monday, November 8th 2021, 9:00:56 pm                                                                         #
+# Modified : Tuesday, November 9th 2021, 5:12:57 am                                                                        #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
 # Copyright: (c) 2021 nov8.ai                                                                                              #
 # ======================================================================================================================== #
-# %%
+"""Module for database and table creation data definition language in the form dictionaries."""
+
+TABLES = {}
+TABLES['datasource'] = """
+CREATE TABLE amazon(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(50),
+    type VARCHAR(20),
+    active TINYINT(1),
+    n INT,
+    size INT,
+    url VARCHAR(200),
+    filename VARCHAR(50),
+    filext VARCHAR(10),
+    s3 TINYINT(1)
+)
+"""

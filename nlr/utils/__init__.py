@@ -8,14 +8,13 @@
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Author   : John James                                                                                                    #
 # Company  : nov8.ai                                                                                                       #
-# Email    : john.james.sf@gmail.com                                                                                       #
+# Email    : john.james@nov8.ai                                                                                            #
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
-# Created  : Sunday, November 7th 2021, 9:11:51 pm                                                                         #
-# Modified : Tuesday, November 9th 2021, 12:04:10 am                                                                       #
-# Modifier : John James (john.james.sf@gmail.com)                                                                          #
+# Created  : Saturday, November 6th 2021, 11:08:28 pm                                                                      #
+# Modified : Monday, November 8th 2021, 12:26:27 pm                                                                        #
+# Modifier : John James (john.james@nov8.ai)                                                                               #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
 # Copyright: (c) 2021 nov8.ai                                                                                              #
 # ======================================================================================================================== #
-# %%
