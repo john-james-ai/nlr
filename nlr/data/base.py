@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Monday, November 8th 2021, 1:20:26 am                                                                         #
-# Modified : Wednesday, November 10th 2021, 6:47:37 am                                                                     #
+# Modified : Wednesday, November 10th 2021, 11:20:38 am                                                                    #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -25,72 +25,12 @@ import logging
 from typing import Callable, Any
 import uuid
 from multiprocessing.Manager import Queue
-from time import process_time
-from resource import getrusage
+
+from nlr.utils.system import Profiler
 
 # ------------------------------------------------------------------------------------------------------------------------ #
 logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------------------------------------------------------------ #
-
-
-# ------------------------------------------------------------------------------------------------------------------------ #
-class Profiler:
-    """Class encapsulating statistics and metrics captured about processes in a multiprocessing environment."""
-
-    def __init__(self) -> None:
-        self.p = None
-        self.profile = {}
-
-        self.time = {}
-        self.cpu = {}
-        self.memory = {}
-        self.io = {}
-        self.wall = {}
-
-        # CPU Statistics
-        self.user_CPU_time = 0
-        self.system_CPU_time = 0
-
-        # Memory utilization
-        self.memory_size_shared = 0
-        self.memory_size_unshared = 0
-        self.soft_page_faults = 0
-        self.hard_page_faults = 0
-        self.swap_outs = 0
-
-        # File
-        self.file_input_operations
-        self.file_output_operations
-
-        # Context switches
-        self.voluntary_context_switches = 0
-        self.involuntary_context_switches = 0
-
-        # Wall time
-        self.start_time = None
-        self.end_time = None
-        self.wall_time = None
-
-    def start(self) -> None:
-        self.p = psutil.Process()
-        self.time['start'] = datetime.now()
-        self.time['create_time'] = self.p.create_time()
-        self.time['create_time_format'] = datetime.fromtimestamp(
-            self.p.create_time()).strftime("%Y-%m-%d %H:%M:%S")
-        self.start_time = datetime.now()
-
-    def end(self) -> None:
-        # Time
-        self.time['end'] = datetime.now()
-        self.time['wall'] = self.time['end'] - self.time['start']
-
-        # IO
-        keys = ['read_count', 'write_count', 'read_bytes', 'write_bytes']
-        values = [p.io_counters()[n] for n in range(4)]
-        for k, v in zip(keys, values):
-            self.io[k] = v
-
-        # ------------------------------------------------------------------------------------------------------------------------ #
 
 
 class Job(ABC):

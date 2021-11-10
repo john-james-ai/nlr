@@ -1,0 +1,23 @@
+category,stat,label
+id,job,Job Name
+id,pid,Process ID
+id,name,Process Name
+time,create_time_format,Create Time
+time,start_time,Start Time
+time,end_time,End Time 
+time,wall_time,Wall Time
+cpu,cpu_percent,CPU Percent
+cpu,user,User CPU Time
+cpu,system,System CPU Time
+memory,memory_percent,Memory Percent
+memory,uss,Unique Set Size
+memory,vms,Virtual Memory Size
+memory,rss,Resident Set Size
+io,read_count,Read Count
+io,read_bytes,Read Bytes
+io,write_count,Write Count
+io,write_bytes,Write Bytes
+page_faults,voluntary,Soft Page Faults
+page_faults,involuntary,Hard Page Faults
+resources,num_open_files,Open Files
+resources,num_connections,Open Connections
