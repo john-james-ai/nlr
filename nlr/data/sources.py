@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Sunday, November 7th 2021, 5:42:49 pm                                                                         #
-# Modified : Tuesday, November 9th 2021, 12:32:20 am                                                                       #
+# Modified : Wednesday, November 10th 2021, 3:32:54 am                                                                     #
 # Modifier : John James (john.james@nov8.ai)                                                                               #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -29,7 +29,7 @@ import botocore
 import multiprocessing as mp
 
 
-from nlr.process.base import Director, Worker, ProjectManager, Job, Project
+from nlr.data.base import Director, Worker, Manager, Job, Project
 from nlr.process.admin import ProjectAdmin
 from nlr.utils.files import get_filenames
 
@@ -237,7 +237,7 @@ class S3DataSource(DataSource):
 
 
 # ------------------------------------------------------------------------------------------------------------------------ #
-class DataSourceManager(ProjectManager):
+class DataSourceManager(Manager):
 
     def __init__(self, project: Project):
         super(DataSourceManager, self).__init__(project)
