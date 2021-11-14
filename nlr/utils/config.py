@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Monday, November 8th 2021, 11:25:50 pm                                                                        #
-# Modified : Tuesday, November 9th 2021, 12:19:02 pm                                                                       #
+# Modified : Saturday, November 13th 2021, 6:53:41 am                                                                      #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -20,6 +20,7 @@
 # ======================================================================================================================== #
 import os
 from configparser import ConfigParser
+import pandas as pd
 # ------------------------------------------------------------------------------------------------------------------------ #
 configfile = os.path.join("config", "config.ini")
 # ------------------------------------------------------------------------------------------------------------------------ #
@@ -27,34 +28,41 @@ configfile = os.path.join("config", "config.ini")
 
 class Config:
 
+    def exists(self, name: str) -> bool:
+        """Returns True if the named section exists, False otherwise.
+
+        Arguments:
+            name : The name of the resource
+        """
+
+        config = ConfigParser()
+        config.read(configfile)
+        return name in config.sections()
+
     def read_config(self, section: str, option: str):
         config = ConfigParser()
         config.read(configfile)
         return config[section][option]
 
-    def read_section(self, section: str, as_dict=True):
+    def read_section(self, section: str, as_df=False):
         """Returns the a section configuration.
 
-        Configuration is returned as a nested dictionary by default. If as_dict is False, the function returns a dictionary of lists of key value pairs.
+        Arguments:
+            section: The section of the configuration to read
+            as_dict: If True return as dictionary, otherwise return as dataframe.
         """
         config = ConfigParser()
         config.read(configfile)
-        options = [option for option in config[section]]
+        options = config[section]
+        d = {}
+        for option in options:
+            d[option] = self.read_config(section, option)
 
-        if as_dict:
-            d = {}
-            for option in options:
-                d[option] = self.read_config(section, option)
-            return d
+        if as_df:
+            return pd.DataFrame.from_dict(d, orient='index')
 
         else:
-            l = []
-            for option in options:
-                d = {}
-                d[option] = self.read_config(section, option)
-                l.append(d)
-
-            return l
+            return d
 
     def write_config(self, section: str, option: str, value: str):
         config = ConfigParser()
@@ -98,8 +106,13 @@ class Config:
     def print_section(self, section: str):
         config = ConfigParser()
         config.read(configfile)
-        options = self.read_section(section, as_dict=False)
+        d = self.read_section(section, as_df=False)
+        try:
+            d['password'] = '*****'
+        except KeyError() as e:
+            pass
+        df = pd.DataFrame.from_dict(d, orient='index')
+        print("\n\n")
         print("{}".format(section))
-        for option in options:
-            for k, v in option.items():
-                print("\t{}:\t\t{}".format(k, v))
+        print(df.to_string())
+        print("\n")

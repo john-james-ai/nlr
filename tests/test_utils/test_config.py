@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Monday, November 8th 2021, 11:29:19 pm                                                                        #
-# Modified : Tuesday, November 9th 2021, 12:24:15 pm                                                                       #
+# Modified : Saturday, November 13th 2021, 6:21:41 am                                                                      #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -131,10 +131,10 @@ class ConfigTests:
         logger.info("    Successfully completed {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-    def test_read_section_as_dict(self):
+    def test_read_section(self):
 
         config = Config()
-        options = config.read_section('OPTIONS', as_dict=True)
+        options = config.read_section('OPTIONS')
         keys = list(options.keys())
         values = list(options.values())
         for i in range(len(keys)):
@@ -146,12 +146,12 @@ class ConfigTests:
         logger.info("    Successfully completed {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-    def test_read_section(self):
+    def test_read_section_as_df(self):
 
         config = Config()
-        options = config.read_section('OPTIONS', as_dict=False)
+        df = config.read_section('OPTIONS', as_df=True)
 
-        assert isinstance(options, list), "Failure in {}".format(
+        assert isinstance(df, pd.DataFrame), "Failure in {}".format(
             inspect.stack()[0][3])
 
         logger.info("    Successfully completed {} {}".format(
@@ -190,8 +190,8 @@ if __name__ == "__main__":
     t.test_remove_section()
     t.test_write_options()
     t.test_print_section()
-    t.test_read_section_as_dict()
     t.test_read_section()
+    t.test_read_section_as_df()
     t.test_teardown()
 
 

@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Sunday, November 7th 2021, 9:12:39 pm                                                                         #
-# Modified : Tuesday, November 9th 2021, 2:23:03 am                                                                        #
+# Modified : Saturday, November 13th 2021, 6:28:52 am                                                                      #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -20,6 +20,7 @@
 # ======================================================================================================================== #
 # %%
 import os
+import time
 import logging
 import pandas as pd
 
@@ -30,29 +31,31 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------------------------------------------------------------ #
 
 
-def folder_setup():
+def _setup_folders():
     """Setup a few folders under the designated home project directory."""
     config = Config()
 
-    # Get expanded default project home directory based upon environment
-    default_home = os.getcwd() if 'dev' in config.read_config(
-        'SETUP', 'env') else os.path.join("~", "nlr")
-    default_home = os.path.expanduser(default_home)
-
     # Format the keys / options
-    options = ['home', 'data_home', 'raw', 'cooked']
+    options = ['home', 'data_home', 'raw', 'interim', 'processed', 'cooked']
 
     # Format the values / directories
-    home = os.path.expanduser(input(
-        "Please enter your project home directory relative to your user home directory.[{}]".format(default_home)) or default_home)
-    data_home = os.path.expanduser(os.path.join(home, 'data'))
-    raw = os.path.expanduser(os.path.join(data_home, 'raw'))
-    cooked = os.path.expanduser(os.path.join(data_home, 'cooked'))
+    home = input(
+        "Please enter the name of your project home directory") or 'nlr'
+    time.sleep(1)
+    home = os.path.expanduser(os.path.join('~', home))
+    data_home = os.path.join(home, 'data')
+    raw = os.path.join(data_home, 'raw')
+    interim = os.path.join(data_home, 'interim')
+    processed = os.path.join(data_home, 'processed')
+    cooked = os.path.join(data_home, 'cooked')
 
-    values = [home, data_home, raw, cooked]
+    values = [home, data_home, raw, interim, processed, cooked]
 
     # Indicate whether the paths already existed
-    actions = [not os.path.exists(v) for v in values]
+    actions = []
+    for v in values:
+        actions.append("Created" if not os.path.exists(v)
+                       else "Already Exists")
 
     # Create the directories if they don't already exist
     [os.makedirs(v, exist_ok=True) for v in values]
@@ -77,7 +80,17 @@ def folder_setup():
     config.write_options('PATH', options_list_of_dictionaries)
 
 
+def setup_folders():
+    # Setup folders only if not in development.
+    config = Config()
+    env = config.read_config('ENVIRONMENT', 'dev')
+    if 'F' in env or 'f' in env or not env:
+        _setup_folders()
+    else:
+        print("\nDevelopment environment has already been setup.\n\n")
+
+
 if __name__ == "__main__":
-    folder_setup()
+    setup_folders()
 
     # %%

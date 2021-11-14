@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Sunday, November 7th 2021, 5:42:49 pm                                                                         #
-# Modified : Wednesday, November 10th 2021, 3:32:54 am                                                                     #
+# Modified : Wednesday, November 10th 2021, 11:01:21 pm                                                                    #
 # Modifier : John James (john.james@nov8.ai)                                                                               #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -21,72 +21,117 @@
 """Scripts associated with sourcing data."""
 # %%
 from abc import ABC, abstractmethod
+from datetime import datetime
+from copy import copy
 import os
 import logging
 from configparser import ConfigParser
 import boto3
 import botocore
 import multiprocessing as mp
-
+from typing import Any
 
 from nlr.data.base import Director, Worker, Manager, Job, Project
 from nlr.process.admin import ProjectAdmin
 from nlr.utils.files import get_filenames
+from nlr.database.access import DatasetMetadataDAO
 
 # ------------------------------------------------------------------------------------------------------------------------ #
 logger = logging.getLogger(__name__)
 
-
-class DownloadResponse:
-    start = None
-    end = None
-    duration = None
-    destination = None
-    source = None
-    force = None
-    code = None
-    message = None
-    metadata = None
+# ------------------------------------------------------------------------------------------------------------------------ #
 
 
-class DataSource(ABC):
-    """Base class for a data source."""
+class MetadataBase(ABC):
+    """Abstract base class for metadata"""
 
-    def __init__(self, name: str, *args, **kwargs):
-        self.name = name
-        self._config = ConfigParser()
-        self.response = DownloadResponse()
+    def __init__(self, *args, **kwargs) -> None:
+        self.id
+        self.name
+        self.description
+        self.created = datetime.now()
+        self.updated = None
+        self.version = 0
 
     @abstractmethod
-    def connect(self) -> bool:
+    def equal(self, object: Any) -> bool:
+        """Determines whether the specified object is equal to the current object."""
         pass
 
     @abstractmethod
-    def bucket_exists(self) -> bool:
+    def get_type(self) -> Any:
+        """Returns the class type for the current instance."""
         pass
 
     @abstractmethod
-    def object_exists(self) -> bool:
+    def clone(self) -> Any:
+        """Performs memberwise shallow copy of current object."""
+
+    @abstractmethod
+    def load(self) -> None:
+        """Loads the metadata from back-end storage."""
         pass
 
     @abstractmethod
-    def download(self, source: str, destination: str, force: bool = False) -> dict:
-        """Downloads a single file / object from an S3 bucket.
-
-        Arguments:
-            source: The uri, filename or url for the source data.
-            destination: The expanded directory to which data is to be downloaded.
-            force: If True, local data, if exists are overwritten
-        """
+    def save(self) -> None:
+        """Saves metadata to the back-end data storage."""
         pass
 
-    @abstractmethod
-    def get_metadata(self) -> dict:
-        pass
 
-    @abstractmethod
-    def get_inventory(self) -> list:
-        pass
+class DatasetMetadata(MetadataBase):
+    """Base class for a data sets."""
+
+    def __init__(self, name: str, dao: DatasetMetadataDAO, description: str = None,
+                 local_directory: str = None, uri: str = None) -> None:
+        super(DatasetMetadata, self).__init__(name, description)
+        self.dao = dao
+        self.uri = uri
+        self.filename = os.path.basename(uri) if uri else None
+        self.filetype = None
+        self.file_content = None                            # Rating or review
+        self.file_ext = os.path.splitext(uri) if uri else None
+        self.local_directory = local_directory
+        self.features = None
+        self.dependent_variable = None
+        self.size = 0
+        self.download_size = 0
+
+    def __eq__(self, dataset_metadata: DatasetMetadata) -> bool:
+        """Determines whether the specified object is equal to the current object."""
+        return self.__dict__ == dataset_metadata.__dict__
+
+    def get_type(self) -> Any:
+        """Returns the class type for the current instance."""
+        return self.__class__.__name__
+
+    def clone(self) -> Any:
+        """Performs memberwise shallow copy of current object."""
+        ds = DatasetMetadata(self.name, self.description, self.local_directory,
+                             self.uri)
+        ds.filename = copy(self.filename)
+        ds.filetype = copy(self.filetype)
+        ds.file_content = copy(self.file_content)
+        ds.file_ext = copy(self.file_ext)
+        ds.local_directory = copy(self.local_directory)
+        ds.feature = copy(self.features)
+        ds.dependent_variable = copy(self.dependent_variable)
+        ds.size = copy(self.size)
+        ds.download_size = copy(self.download_size)
+        return ds
+
+    def load(self) -> None:
+        try:
+            mdds = self.dao.read_by_id(self.id)
+            for k, v in mdds.items():
+                self.__dict__[k] = v
+        except Exception as e:
+            logger.error(e)
+
+    def save(self, dataset_metadata_dao: DatasetMetadataDAO) -> None:
+        try:
+            self.dao.write(self)
+        except Exception as e:
+            logger.error(e)
 
 
 class S3DataSource(DataSource):

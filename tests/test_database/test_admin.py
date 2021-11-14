@@ -12,7 +12,7 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Tuesday, November 9th 2021, 4:35:35 pm                                                                        #
-# Modified : Tuesday, November 9th 2021, 6:27:11 pm                                                                        #
+# Modified : Saturday, November 13th 2021, 9:26:14 am                                                                      #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
@@ -26,7 +26,7 @@ import logging
 import inspect
 
 from nlr.database.connect import MySQLDatabase, MySQLServer
-from nlr.database.admin import Database, Table
+from nlr.database.admin import DatabaseAdmin, TableAdmin
 from nlr.database import DBNAME
 from nlr.database.ddl import TABLES
 # ------------------------------------------------------------------------------------------------------------------------ #
@@ -40,7 +40,7 @@ class DatabaseAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        db = Database()
+        db = DatabaseAdmin()
         server_con = MySQLServer()
         with server_con() as connection:
             db.drop(DBNAME, connection)
@@ -55,7 +55,7 @@ class DatabaseAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        db = Database()
+        db = DatabaseAdmin()
         server_conn = MySQLServer()
         with server_conn() as connection:
             db.create(DBNAME, connection, exist_ok=False)
@@ -70,7 +70,7 @@ class DatabaseAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        db = Database()
+        db = DatabaseAdmin()
         server_conn = MySQLServer()
         with server_conn() as connection:
             db.create(DBNAME, connection, exist_ok=False)
@@ -85,7 +85,7 @@ class DatabaseAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        db = Database()
+        db = DatabaseAdmin()
         server_conn = MySQLServer()
         with server_conn() as connection:
             db.create(DBNAME, connection, exist_ok=True)
@@ -104,7 +104,7 @@ class TableAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        table = Table()
+        table_admin = TableAdmin()
         dbconn = MySQLDatabase()
         with dbconn(DBNAME) as connection:
             table.drop(TABLES, connection)
@@ -118,10 +118,10 @@ class TableAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        table = Table()
+        table_admin = TableAdmin()
         dbconn = MySQLDatabase()
         with dbconn(DBNAME) as connection:
-            table.create(TABLES, connection)
+            table_admin.create(TABLES, connection)
             for name in TABLES.keys():
                 assert table.exists(name, connection), "Failure in {}".format(
                     inspect.stack()[0][3])
@@ -134,10 +134,10 @@ class TableAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        table = Table()
+        table_admin = TableAdmin()
         dbconn = MySQLDatabase()
         with dbconn(DBNAME) as connection:
-            table.create(TABLES, connection, exist_ok=False)
+            table_admin.create(TABLES, connection, exist_ok=False)
             for name in TABLES.keys():
                 assert table.exists(name, connection), "Failure in {}".format(
                     inspect.stack()[0][3])
@@ -150,10 +150,10 @@ class TableAdminTests:
         logger.info("    Started {} {}".format(
             self.__class__.__name__, inspect.stack()[0][3]))
 
-        table = Table()
+        table_admin = TableAdmin()
         dbconn = MySQLDatabase()
         with dbconn(DBNAME) as connection:
-            table.create(TABLES, connection, exist_ok=True)
+            table_admin.create(TABLES, connection, exist_ok=True)
             for name in TABLES.keys():
                 assert table.exists(name, connection), "Failure in {}".format(
                     inspect.stack()[0][3])
