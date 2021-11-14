@@ -12,18 +12,61 @@
 # URL      : https://github.com/john-james-sf/nlr                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # Created  : Tuesday, November 9th 2021, 8:24:49 pm                                                                        #
-# Modified : Tuesday, November 9th 2021, 10:37:17 pm                                                                       #
+# Modified : Sunday, November 14th 2021, 5:25:51 pm                                                                        #
 # Modifier : John James (john.james.sf@gmail.com)                                                                          #
 # ------------------------------------------------------------------------------------------------------------------------ #
 # License  : BSD 3-clause "New" or "Revised" License                                                                       #
 # Copyright: (c) 2021 nov8.ai                                                                                              #
 # ======================================================================================================================== #
+# Abstracts the physical database from the rest of the applications.
 from abc import ABC, abstractmethod
 import logging
 import mysql.connector as cnx
 from typing import Any
+
+from nlr.database.connect import MySQLPool
 # ------------------------------------------------------------------------------------------------------------------------ #
 logger = logging.getLogger(__name__)
+
+
+class MetadataDAO(ABC):
+    """Abstract contract for database access objects. """
+
+    @abstractmethod
+    def create(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def read(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def update(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def delete(self, **kwargs):
+        pass
+
+
+# ------------------------------------------------------------------------------------------------------------------------ #
+class DatasetMetadataDAO(MetadataDAO):
+    """Dataset metadata database access object.."""
+
+    def __init__(self, server, pool) -> None:
+        super(DatasetMetadataDAO, self).__init__(server, pool)
+
+    def create(self, dataset_metadata: DatasetMetadata) -> None:
+        self.server.initialize()
+
+    def update(self, **kwargs):
+        pass
+
+    def read(self, **kwargs):
+        pass
+
+    def delete(self, **kwargs):
+        pass
 
 
 class DBAccess:
@@ -62,24 +105,56 @@ class DBAccess:
 
 
 class Query:
-    """Standard Query object encapsulating the parameterized SQL string, and parameters.
+    """Data transfer object that encapsulates a query .
 
     Arguments:
-        name: Name for the query. Defaults to the classname of the Query factory.
-        description: Short sentence summary used for logging.
-        table: Name of table upon which the query is executed
-        qtype: One of ['insert', 'select', 'update', 'delete']
-        sql: Parameterized query string.
-        params: Tuple containing query parameters
-        result: Results of the query.
+        name: The name of the query
+        description: Description of what the query was doing
+        modulename: The name of the module in which the query originated.
+        classname: The name of the class in which the query originated.
+        methodname: The name of the method from which the query originated.
+        resource: The database resource upon which the query was to be executed.
+        query_string: The query string without parameters
+        connection: The MySQL Connection
+        parameters: Optional. Parameters for the query
 
     """
 
-    def __init__(self, name: str, table: str, qtype: str, sql: str, params: tuple):
+    def __init__(self, name: str, description: str, classname: str, methodname: str, resource: str, query_string: str,
+                 parameters: tuple = (), arguments=None) -> None:
         self.name = name
         self.description = description
-        self.table = table
-        self.qtype = qtype
-        self.sql = sql
-        self.params = params
-        self.results = None
+        self.classname = classname
+        self.methodname = methodname
+        self.resource = resource
+        self.query_string = query_string
+        self.parameters = parameters
+        self.arguments = arguments
+
+    def __repr__(self):
+        rep = 'Query('+self.name + ',' + self.classname + ',' + self.methodname + ',' + \
+            self.resource + ',' + self.query_string + ',' + \
+            self.parameters + ',' + self.arguments + ')'
+        return rep
+
+    def __str__(self):
+        result = ""
+        attrs = self.__dict__
+        for k, v in attrs.items():
+            result += "\t\t{}: \t{}\n".format(k, v)
+        return result
+
+    def has_argument(self, argument) -> bool:
+        answer = False
+        if self.arguments:
+            if argument in self.arguments.keys():
+                answer = True
+            else:
+                answer = False
+        return answer
+
+    def get_argument(self, argument) -> Any:
+        if self.has_argument(argument):
+            return self.arguments[argument]
+        else:
+            return None
